@@ -32,7 +32,7 @@ namespace AuthAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<AuthContext>(option=>option.UseSqlServer(Configuration["db:connectionString"]));
+            services.AddDbContext<AuthContext>(options=>options.UseSqlServer(Configuration.GetConnectionString("SQLServer")));
             services.AddAuthentication(x=>{
                 x.DefaultAuthenticateScheme=JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme=JwtBearerDefaults.AuthenticationScheme;

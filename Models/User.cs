@@ -5,6 +5,7 @@ using System.Threading;
 
 namespace AuthAPI.Models
 {
+    #nullable enable
     public class User
     {
         [Key]
@@ -13,5 +14,16 @@ namespace AuthAPI.Models
         public byte[]?  PasswordHash {get;set;}
         public byte[]? PasswordSalt {get;set;}
         public string Role {get;set;}
+
+        public User(string username, string role){
+            this.Username=username;
+            this.Role=role;
+        }
+        public User(string username,string role,byte[] passwordHash, byte[] passwordSalt){
+            this.Username=username;
+            this.Role=role;
+            this.PasswordHash=passwordHash;
+            this.PasswordSalt=passwordSalt;
+        }
     }
 }

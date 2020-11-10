@@ -5,6 +5,7 @@ using System.Text.Encodings;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System;
 
 namespace AuthAPI.Data
 {
@@ -24,13 +25,17 @@ namespace AuthAPI.Data
             await _context.SaveChangesAsync();
             return user;
         }
-        public async void CreateMany((User user,string password)[] values){
-            foreach(var v in values){
+        public async Task CreateMany(List<UserForRegister> users){
+            foreach(UserForRegister u in users){
+                User newUser= new User(u.Username,u.Role);
                 byte[] passwordHash,passwordSalt;
-                CreatePasswordHash(v.password,out passwordHash,out passwordSalt);
-                v.user.PasswordHash=passwordHash;
-                v.user.PasswordSalt=passwordSalt;
-                await _context.Users.AddAsync(v.user);
+                CreatePasswordHash(u.Password,out passwordHash,out passwordSalt);
+                newUser.PasswordHash=passwordHash;
+                newUser.PasswordSalt=passwordSalt;
+                if(newUser==null){
+                    Console.WriteLine("usuario nulo");
+                }
+                await _context.Users.AddAsync(newUser);           
             }
             await _context.SaveChangesAsync();
         }
@@ -72,6 +77,18 @@ namespace AuthAPI.Data
                 usernames.Add(u.Username);
             }
             return usernames;
+        }
+        public async Task<bool> DropAllRecords(){
+            try{
+                List<User> allUsers=await _context.Users.ToListAsync();
+                _context.Users.RemoveRange(allUsers);
+                _context.Users.RemoveRange();
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch{
+                return false;
+            }
         }
         private void CreatePasswordHash(string password,out byte[] hash,out byte[] salt){
             using(var hmac=new System.Security.Cryptography.HMACSHA512()){

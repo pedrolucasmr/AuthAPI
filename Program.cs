@@ -16,20 +16,24 @@ namespace AuthAPI
         public static void Main(string[] args)
         {
             var host=CreateHostBuilder(args).Build();
+
+            CreateDbIfNotExists(host); 
+
+            host.Run();
+        }
+        private async static void CreateDbIfNotExists(IHost host){
             using(var scope=host.Services.CreateScope()){
                 var services=scope.ServiceProvider;
                 try{
                     var context=services.GetRequiredService<AuthContext>();
-                    DbInitializer.Initialize(context);
+                    await DbInitializer.Initialize(context);
                 }
                 catch(Exception e){
                     var logger=services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(e,"Ocorreu um erro ao semear o banco de dados");
                 }
             }
-            host.Run();
         }
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>

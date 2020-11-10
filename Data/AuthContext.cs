@@ -7,8 +7,7 @@ namespace AuthAPI.Data
     public class AuthContext:DbContext
     {
         private readonly IConfiguration _configuration;
-        public AuthContext(IConfiguration configuration,DbContextOptions<DbContext> options):base(options){
-            _configuration=configuration;
+        public AuthContext(DbContextOptions<AuthContext> options):base(options){
         }
         public DbSet<User> Users{get;set;}
         protected override void OnModelCreating(ModelBuilder modelBuilder){
